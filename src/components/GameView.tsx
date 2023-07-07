@@ -9,6 +9,7 @@ const GameView = () => {
     const [gameBoard, setGameBoard] = useState<any[][]>([])
     const boardRef = useRef<any[][]>(gameBoard)
     boardRef.current = gameBoard
+    const [previousTurn, setPreviousTurn] = useState<any[][]|null>([])
 
     const initializeGame = () => {
         let oldBoard: any[] = JSON.parse(JSON.stringify([[...defaultGameBoard[0]], [...defaultGameBoard[1]], [...defaultGameBoard[2]], ...[defaultGameBoard[3]]]))
@@ -36,28 +37,32 @@ const GameView = () => {
     const [turn, setTurn] = useState<number>(0)
     // SCORE
     const [score, setScore] = useState<number>(0)
-
+    const [scoreChange, setScoreChange] = useState<number>()
     // Handlers
     const swipe = (dir: SwipeDirections) => {
         switch (dir) {
             case "Down":
-                swipeDown(getBoardCopy())
+                swipeDown(getCurrentBoardCopy())
                 break;
             case "Up":
-                swipeUp(getBoardCopy())
+                swipeUp(getCurrentBoardCopy())
                 break;
             case "Left":
-                swipeLeft(getBoardCopy())
+                swipeLeft(getCurrentBoardCopy())
                 break;
             case "Right":
-                swipeRight(getBoardCopy())
+                swipeRight(getCurrentBoardCopy())
                 break;
             default:
                 break;
         }
     }
-    const getBoardCopy = (): any[][] => {
+    const getCurrentBoardCopy = (): any[][] => {
         return JSON.parse(JSON.stringify([[...boardRef.current[0]], [...boardRef.current[1]], [...boardRef.current[2]], ...[boardRef.current[3]]]))
+    }
+    const getPreviousBoardCopy = (): any[][]|null => {
+        if(!previousTurn) return null
+        return JSON.parse(JSON.stringify([[...previousTurn[0]], [...previousTurn[1]], [...previousTurn[2]], ...[previousTurn[3]]]))
     }
     const boardToString = (): string => {
         return JSON.stringify([[...boardRef.current[0]], [...boardRef.current[1]], [...boardRef.current[2]], ...[boardRef.current[3]]])
@@ -85,7 +90,7 @@ const GameView = () => {
                 // console.log(i, col[i])
                 let spacesToCheck = 3 - i
                 for (let j = 0; j < spacesToCheck; j++) {
-                    
+
 
                     let me = col[i + j]
                     let you = col[i + 1 + j]
@@ -93,7 +98,7 @@ const GameView = () => {
                         col[i + j] = null
                         col[i + 1 + j] = me
                         console.log(col)
-                    checked++
+                        checked++
 
                         continue
 
@@ -102,7 +107,7 @@ const GameView = () => {
                         col[i + j] = null
                         col[i + 1 + j] = me + you
                         setScore(old => old + me + you)
-                    checked++
+                        checked++
 
                         break
                     }
@@ -125,7 +130,7 @@ const GameView = () => {
                 // console.log(i, col[i])
                 let spacesToCheck = i
                 for (let j = 0; j < spacesToCheck; j++) {
-                   
+
                     let me = col[i - j]
                     let you = col[i - 1 - j]
                     if (you == null) {
@@ -194,11 +199,23 @@ const GameView = () => {
 
     // Check if game over and add new 2
     const endTurn = (newGameBoard: any[][]) => {
+        let lastTurn: any[][] = getCurrentBoardCopy()
         setTurn(old => old + 1)
         let rand: Coord = getRandomEmptyBlock(newGameBoard)
         console.log(rand)
         newGameBoard[rand[0]][rand[1]] = 2
+        // SET HISTORY
+        setPreviousTurn(lastTurn)
+        // SET CURRENT STATE
         setGameBoard(newGameBoard)
+    }
+    // BACK 1 TURN
+    const undoTurn = () => {
+        if(previousTurn == null) return
+        let lastTurn = getPreviousBoardCopy()
+        setPreviousTurn(null)
+        setGameBoard(lastTurn!)
+        setTurn(old => old - 1)
     }
     // UTIL
     const getRandBoardBlock = (): number[] => {
@@ -252,16 +269,16 @@ const GameView = () => {
         // console.log(e)
         switch (e.key) {
             case "ArrowUp":
-                swipeUp(getBoardCopy())
+                swipeUp(getCurrentBoardCopy())
                 break;
             case "ArrowDown":
-                swipeDown(getBoardCopy())
+                swipeDown(getCurrentBoardCopy())
                 break;
             case "ArrowLeft":
-                swipeLeft(getBoardCopy())
+                swipeLeft(getCurrentBoardCopy())
                 break;
             case "ArrowRight":
-                swipeRight(getBoardCopy())
+                swipeRight(getCurrentBoardCopy())
                 break;
 
             default:
@@ -270,17 +287,32 @@ const GameView = () => {
     }
     return (
         <div {...handlers} className="">
-            <div className="flex flex-row justify-between">
 
-                <div id="score-box" className="mb-4">
+            {/* GAME STATE CONTROLS */}
+            <div className="flex flex-row justify-between mb-4">
+                <button className="bg-neutral-300 text-black p-2 text-xs font-bold">NEW GAME</button>
+                <button disabled={previousTurn == null} onClick={()=>undoTurn()} className={`${previousTurn != null ? "bg-neutral-50" : "bg-neutral-600"} text-black p-2 text-xs font-bold`}>UNDO TURN</button>
+            </div>
+
+
+            {/* STATS */}
+            <div className="flex flex-row justify-between mb-2">
+
+                <div id="score-box" className="">
                     <div className="font-semibold text-neutral-400 text-sm leading-3">SCORE</div>
                     <div className="font-extrabold text-white text-lg">{score}</div>
                 </div>
-                <div id="turn-box" className="mb-4">
+                <div id="turn-box" className="">
                     <div className="font-semibold text-neutral-400 text-sm leading-3">TURN</div>
                     <div className="font-extrabold text-white text-lg">{turn}</div>
                 </div>
             </div>
+
+
+
+
+
+            {/* GAME BOARD */}
             <div id="gameboard" className="bg-white w-64 h-64 text-black flex flex-row">
                 {gameBoard.map((col: number[], indx: number) => {
                     return (
