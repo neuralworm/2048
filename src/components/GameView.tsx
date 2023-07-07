@@ -1,17 +1,17 @@
 import { useState, useEffect } from "react"
 import { useSwipeable, SwipeDirections } from "react-swipeable"
 
-const defaultGameBoard: any[][] = [[null,null,null,null],[null,null,null,null],[null,null,null,null],[null,null,null,null]]
+const defaultGameBoard: any[][] = [[null, null, null, null], [null, null, null, null], [null, null, null, null], [null, null, null, null]]
 
 const GameView = () => {
 
-    const [gameBoard, setGameBoard] = useState<any[][]>(defaultGameBoard)
+    const [gameBoard, setGameBoard] = useState<any[][]>([])
 
     const initializeGame = () => {
-        let oldBoard: any[] = [[...defaultGameBoard[0]], [...defaultGameBoard[1]], [...defaultGameBoard[2]], ...[defaultGameBoard[3]]]
+        let oldBoard: any[] = JSON.parse(JSON.stringify([[...defaultGameBoard[0]], [...defaultGameBoard[1]], [...defaultGameBoard[2]], ...[defaultGameBoard[3]]]))
         let first: number[] = getRandBoardBlock()
         let second: number[] = getRandBoardBlock()
-        while (first.toString() == second.toString()){
+        while (first.toString() == second.toString()) {
             second = getRandBoardBlock()
         }
         console.log(first, second)
@@ -33,25 +33,56 @@ const GameView = () => {
 
     // Handlers
     const swipe = (dir: SwipeDirections) => {
+        switch (dir) {
+            case "Down":
+                swipeDown()
+                break;
+            case "Up":
+                swipeUp()
+                break;
+            case "Left":
+                swipeLeft()
+                break;
+            case "Right":
+                swipeRight()
+                break;
+            default:
+                break;
+        }
+    }
+
+    // DIRECTIONS
+    const swipeDown = () => {
+
+    }
+    const swipeUp = () => {
         
     }
+    const swipeLeft = () => {
+        
+    }
+    const swipeRight = () => {
+        
+    }
+
+    // UTIL
     const getRandBoardBlock = (): number[] => {
         let rand1 = Math.floor(Math.random() * 4)
         let rand2 = Math.floor(Math.random() * 4)
         return [rand1, rand2]
     }
 
-    useEffect(()=>{
+    useEffect(() => {
         initializeGame()
-    },[])
-    return(
+    }, [])
+    return (
         <div {...handlers} className="">
             <div id="gameboard" className="bg-white w-64 h-64 text-black flex flex-col">
-                {gameBoard.map((col: number[], indx: number)=>{
-                    return(
+                {gameBoard.map((col: number[], indx: number) => {
+                    return (
                         <div className="flex flex-row basis-1/4" key={`col-${indx}`}>
-                            {col.map((row: number, ind2: number)=>{
-                                return(
+                            {col.map((row: number, ind2: number) => {
+                                return (
                                     <div className="flex flex-row items-center justify-center border-2 basis-1/4 font-bold text-neutral-600" key={`col-${indx}-row-${ind2}`}>
                                         {row == null ? "" : row}
                                     </div>
@@ -68,12 +99,12 @@ const GameView = () => {
 
 
 
-interface blockprop{
+interface blockprop {
     num: number
 }
 
-const Block = ({num}: blockprop) => {
-    return(
+const Block = ({ num }: blockprop) => {
+    return (
         <div className="h-12 w-12">
             {num}
         </div>
