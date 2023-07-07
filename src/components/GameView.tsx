@@ -58,6 +58,16 @@ const GameView = () => {
     const getBoardCopy = (): any[][] => {
         return JSON.parse(JSON.stringify([[...boardRef.current[0]], [...boardRef.current[1]], [...boardRef.current[2]], ...[boardRef.current[3]]]))
     }
+    const boardColsToRows = (orig: any[][]): any[][] => {
+        return orig.map((col: any[], ind: number)=>{
+            return [orig[0][ind], orig[1][ind], orig[2][ind], orig[3][ind]]
+        })
+    }
+    const boardRowsToCols = (orig: any[][]): any[][] => {
+        return orig.map((col: any[], ind: number)=>{
+            return [orig[0][ind], orig[0+1][ind], orig[0+2][ind], orig[0+3][ind]]
+        })
+    }
     // DIRECTIONS
     const swipeDown = (boardCopy: any[]) => {
         console.log(boardCopy)
@@ -130,9 +140,42 @@ const GameView = () => {
         setGameBoard(boardCopy)
     }
     const swipeLeft = (boardCopy: any[]) => {
+        let board = boardColsToRows(boardCopy)
+        board.forEach((col: any[], ind: number)=>{
 
+            for(let i = 1; i < col.length; i++){
+                // continue if empty
+                if(col[i] == null) continue
+                // if a number
+                // console.log(i, col[i])
+                let spacesToCheck = i
+                console.log(spacesToCheck + 'spaces to check')
+                for(let j = 0; j < spacesToCheck; j++){
+                    console.log("loop " + j)
+                    console.log(col)
+                    let me = col[i-j]
+                    let you = col[i-1-j]
+                    if(you == null){
+                        col[i-j] = null
+                        col[i-1-j] = me
+                        console.log(col)
+                        continue
+
+                    }
+                    if(you == me){
+                        col[i-j] = null
+                        col[i-1-j] = me * you
+                        setScore(old => old + me * you)
+                        continue
+                    }
+                }
+            }
+        })
+        setGameBoard(boardRowsToCols(board))
+        
     }
     const swipeRight = (boardCopy: any[]) => {
+        
 
     }
 
