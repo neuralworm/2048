@@ -88,16 +88,46 @@ const GameView = () => {
                         setScore(old => old + me * you)
                         continue
                     }
-                    
                 }
-                
             }
         })
         console.log('setting board')
         setGameBoard(boardCopy)
     }
     const swipeUp = (boardCopy: any[]) => {
+        console.log(boardCopy)
+        boardCopy.forEach((col: any[], ind: number)=>{
 
+            for(let i = 1; i < col.length; i++){
+                // continue if empty
+                if(col[i] == null) continue
+                // if a number
+                // console.log(i, col[i])
+                let spacesToCheck = i
+                console.log(spacesToCheck + 'spaces to check')
+                for(let j = 0; j < spacesToCheck; j++){
+                    console.log("loop " + j)
+                    console.log(col)
+                    let me = col[i-j]
+                    let you = col[i-1-j]
+                    if(you == null){
+                        col[i-j] = null
+                        col[i-1-j] = me
+                        console.log(col)
+                        continue
+
+                    }
+                    if(you == me){
+                        col[i-j] = null
+                        col[i-1-j] = me * you
+                        setScore(old => old + me * you)
+                        continue
+                    }
+                }
+            }
+        })
+        console.log('setting board')
+        setGameBoard(boardCopy)
     }
     const swipeLeft = (boardCopy: any[]) => {
 
