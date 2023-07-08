@@ -1,15 +1,22 @@
+import { Move, newMove } from "@/data/Moves"
+import { checkForMoves, findHighest } from "@/util/board"
+import Modal from "antd/lib/modal/Modal"
 import { useState, useEffect, useRef } from "react"
 import { useSwipeable, SwipeDirections } from "react-swipeable"
 
 const defaultGameBoard: any[][] = [[null, null, null, null], [null, null, null, null], [null, null, null, null], [null, null, null, null]]
 
 const GameView = () => {
+    // NEW GAME
+    const [newGame, setNewGame] = useState<boolean>(false)
+    // OPTIONS
+    const [swipeControls, setSwipeControls] = useState<boolean>(true)
 
     // INITIALIZE GAMEBOARD
     const [gameBoard, setGameBoard] = useState<any[][]>([])
     const boardRef = useRef<any[][]>(gameBoard)
     boardRef.current = gameBoard
-    const [previousTurn, setPreviousTurn] = useState<any[][]|null>([])
+    const [previousTurn, setPreviousTurn] = useState<any[][] | null>([])
 
     const initializeGame = () => {
         let oldBoard: any[] = JSON.parse(JSON.stringify([[...defaultGameBoard[0]], [...defaultGameBoard[1]], [...defaultGameBoard[2]], ...[defaultGameBoard[3]]]))
@@ -22,8 +29,14 @@ const GameView = () => {
         oldBoard[first[0]][first[1]] = 2
         oldBoard[second[0]][second[1]] = 2
         setGameBoard(oldBoard)
+        setPreviousTurn(null)
+        setScore(0)
+        setTurn(0)
     }
-
+    const confirmNewGame = () => {
+        setNewGame(false)
+        initializeGame()
+    }
     const config = {
         trackMouse: true
     }
@@ -35,6 +48,7 @@ const GameView = () => {
     })
     //TURN
     const [turn, setTurn] = useState<number>(0)
+    const [turnInProgress, setTurnInProgress] = useState(false)
     // SCORE
     const [score, setScore] = useState<number>(0)
     const [scoreChange, setScoreChange] = useState<number>()
@@ -60,8 +74,8 @@ const GameView = () => {
     const getCurrentBoardCopy = (): any[][] => {
         return JSON.parse(JSON.stringify([[...boardRef.current[0]], [...boardRef.current[1]], [...boardRef.current[2]], ...[boardRef.current[3]]]))
     }
-    const getPreviousBoardCopy = (): any[][]|null => {
-        if(!previousTurn) return null
+    const getPreviousBoardCopy = (): any[][] | null => {
+        if (!previousTurn) return null
         return JSON.parse(JSON.stringify([[...previousTurn[0]], [...previousTurn[1]], [...previousTurn[2]], ...[previousTurn[3]]]))
     }
     const boardToString = (): string => {
@@ -77,6 +91,7 @@ const GameView = () => {
             return [orig[0][ind], orig[0 + 1][ind], orig[0 + 2][ind], orig[0 + 3][ind]]
         })
     }
+  
     // DIRECTIONS
     const swipeDown = (boardCopy: any[]) => {
         console.log(boardCopy)
@@ -90,8 +105,6 @@ const GameView = () => {
                 // console.log(i, col[i])
                 let spacesToCheck = 3 - i
                 for (let j = 0; j < spacesToCheck; j++) {
-
-
                     let me = col[i + j]
                     let you = col[i + 1 + j]
                     if (you == null) {
@@ -125,6 +138,8 @@ const GameView = () => {
             for (let i = 1; i < col.length; i++) {
                 // continue if empty
                 if (col[i] == null) continue
+                let move: Move = newMove([ind, i-1])
+                console.log('move ' + move)
 
                 // if a number
                 // console.log(i, col[i])
@@ -202,16 +217,19 @@ const GameView = () => {
         let lastTurn: any[][] = getCurrentBoardCopy()
         setTurn(old => old + 1)
         let rand: Coord = getRandomEmptyBlock(newGameBoard)
-        console.log(rand)
         newGameBoard[rand[0]][rand[1]] = 2
         // SET HISTORY
         setPreviousTurn(lastTurn)
         // SET CURRENT STATE
         setGameBoard(newGameBoard)
+        // CHECK IF BOARD FULL
+        if(isBoardFull(newGameBoard)){
+            checkForMoves(newGameBoard)
+        }
     }
     // BACK 1 TURN
     const undoTurn = () => {
-        if(previousTurn == null) return
+        if (previousTurn == null) return
         let lastTurn = getPreviousBoardCopy()
         setPreviousTurn(null)
         setGameBoard(lastTurn!)
@@ -235,10 +253,21 @@ const GameView = () => {
         }
         return empties[Math.floor(Math.random() * empties.length)]
     }
+    const isBoardFull = (newBoard: any[][]): boolean => {
+        let empties: Coord[] = []
+        for (let i = 0; i < newBoard.length; i++) {
+            for (let j = 0; j < newBoard[i].length; j++) {
+                if (newBoard[i][j] == null) {
+                    empties.push([i, j])
+                }
+            }
+        }
+        return empties.length > 0 ? false : true
+    }
     // PERSISTENCE
     interface GameState {
         score: number,
-        gameboard: any[][]
+        gameboard: any[][],
     }
     const saveState = () => {
         // console.log(gameBoard)
@@ -286,25 +315,31 @@ const GameView = () => {
         }
     }
     return (
-        <div {...handlers} className="">
+        <div {...handlers} className="cursor-grab select-nones" id="drag-area">
+
 
             {/* GAME STATE CONTROLS */}
             <div className="flex flex-row justify-between mb-4">
-                <button className="bg-neutral-300 text-black p-2 text-xs font-bold">NEW GAME</button>
-                <button disabled={previousTurn == null} onClick={()=>undoTurn()} className={`${previousTurn != null ? "bg-neutral-50" : "bg-neutral-600"} text-black p-2 text-xs font-bold`}>UNDO TURN</button>
+                <button onClick={() => setNewGame(true)} className="bg-neutral-300 text-black p-2 text-xs font-bold">NEW GAME</button>
+                <button disabled={previousTurn == null} onClick={() => undoTurn()} className={`${previousTurn != null ? "bg-neutral-50" : "bg-neutral-600"} text-black p-2 text-xs font-bold`}>UNDO TURN</button>
             </div>
 
 
             {/* STATS */}
-            <div className="flex flex-row justify-between mb-2">
+            <div className="flex flex-row justify-between mb-2 text-center">
+                <div id="highest-number" className="text-2xl bg-neutral-600 w-28 flex items-center justify-center font-bold">
+                    {findHighest(gameBoard)}
+                </div>
+                <div className="flex flex-row gap-4">
 
                 <div id="score-box" className="">
-                    <div className="font-semibold text-neutral-400 text-sm leading-3">SCORE</div>
-                    <div className="font-extrabold text-white text-lg">{score}</div>
+                    <div className="font-semibold text-neutral-400 text-xs leading-3">SCORE</div>
+                    <div className="font-extrabold text-white text-xl">{score}</div>
                 </div>
                 <div id="turn-box" className="">
-                    <div className="font-semibold text-neutral-400 text-sm leading-3">TURN</div>
-                    <div className="font-extrabold text-white text-lg">{turn}</div>
+                    <div className="font-semibold text-neutral-400 text-xs leading-3">TURN</div>
+                    <div className="font-extrabold text-white text-xl">{turn}</div>
+                </div>
                 </div>
             </div>
 
@@ -313,7 +348,7 @@ const GameView = () => {
 
 
             {/* GAME BOARD */}
-            <div id="gameboard" className="bg-white w-64 h-64 text-black flex flex-row">
+            <div id="gameboard" className="bg-white w-48 sm:w-64 h-48 sm:h-64 text-black flex flex-row">
                 {gameBoard.map((col: number[], indx: number) => {
                     return (
                         <div className="flex flex-col basis-1/4" key={`col-${indx}`}>
@@ -330,12 +365,25 @@ const GameView = () => {
                     )
                 })}
             </div>
+            <NewGamePopup confirmNewGame={confirmNewGame} onClose={()=> setNewGame(false)} open={newGame}></NewGamePopup>
         </div>
     )
 
 }
 
-
+interface ModalProps {
+    open: boolean,
+    onClose: Function,
+    confirmNewGame: Function
+}
+const NewGamePopup = ({ open, onClose, confirmNewGame }: ModalProps) => {
+    return (
+        <Modal title="New Game" open={open} onOk={()=> confirmNewGame()} onCancel={()=> onClose()} okText={"Confirm"} cancelText={"Cancel"}>
+        <p>Are you sure you want to end your current game?</p>
+      </Modal>
+      
+    )
+}
 
 interface blockprop {
     num: number
