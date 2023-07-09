@@ -1,6 +1,6 @@
 export type Move = [[number, number], [number, number], boolean]
 export type Turn = Move[]
-type Coord = [number, number]
+export type Coord = [number, number]
 
 export const newMove = (coord: Coord): Move => [coord, coord, false]
 export const MoveDown = (move: Move): Move => {

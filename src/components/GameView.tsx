@@ -1,4 +1,5 @@
-import { Move, newMove } from "@/data/Moves"
+import { Cell, createCell } from "@/data/Cells"
+import { Coord, Move, newMove } from "@/data/Moves"
 import { checkForMoves, findHighest } from "@/util/board"
 import Modal from "antd/lib/modal/Modal"
 import { useState, useEffect, useRef } from "react"
@@ -26,8 +27,8 @@ const GameView = () => {
             second = getRandBoardBlock()
         }
         // console.log(first, second)
-        oldBoard[first[0]][first[1]] = 2
-        oldBoard[second[0]][second[1]] = 2
+        oldBoard[first[0]][first[1]] = createCell([first[0], first[1]])
+        oldBoard[second[0]][second[1]] = createCell([second[0], second[1]])
         setGameBoard(oldBoard)
         setPreviousTurn(null)
         setScore(0)
@@ -91,37 +92,37 @@ const GameView = () => {
             return [orig[0][ind], orig[0 + 1][ind], orig[0 + 2][ind], orig[0 + 3][ind]]
         })
     }
-  
+
     // DIRECTIONS
     const swipeDown = (boardCopy: any[]) => {
         console.log(boardCopy)
         let checked = 0
         boardCopy.forEach((col: any[], ind: number) => {
             for (let i = col.length - 2; i >= 0; i--) {
+                let cell: Cell = col[i] as Cell
                 // continue if empty
-                if (col[i] == null) continue
+                if (cell == null) continue
+                let cellValue: number = col[i].value
 
                 // if a number
-                // console.log(i, col[i])
+                // console.log(i, cellValue)
                 let spacesToCheck = 3 - i
                 for (let j = 0; j < spacesToCheck; j++) {
-                    let me = col[i + j]
-                    let you = col[i + 1 + j]
+                    let me: Cell = cell
+                    let you: Cell = col[i + 1 + j]
                     if (you == null) {
                         col[i + j] = null
                         col[i + 1 + j] = me
-                        console.log(col)
+                        me.coord[1] -= 1
+                        // console.log(col)
                         checked++
-
                         continue
-
                     }
-                    if (you == me) {
+                    if (you.value == me.value) {
                         col[i + j] = null
-                        col[i + 1 + j] = me + you
-                        setScore(old => old + me + you)
+                        col[i + 1 + j] = {...you, value : you.value + me.value} as Cell
+                        setScore(old => old + me.value + you.value)
                         checked++
-
                         break
                     }
                 }
@@ -131,40 +132,49 @@ const GameView = () => {
         console.log('setting board')
         endTurn(boardCopy)
     }
+    useEffect(()=>{
+            console.log(gameBoard.flat(1))
+    },[gameBoard])
     const swipeUp = (boardCopy: any[]) => {
         console.log(boardCopy)
         let checked = 0
         boardCopy.forEach((col: any[], ind: number) => {
+            // let moves: Move[] = []
             for (let i = 1; i < col.length; i++) {
+                let cell: Cell = col[i] as Cell
                 // continue if empty
-                if (col[i] == null) continue
-                let move: Move = newMove([ind, i-1])
-                console.log('move ' + move)
+                if (cell == null) continue
+                let cellValue: number = col[i].value
+                // continue if empty
 
-                // if a number
-                // console.log(i, col[i])
                 let spacesToCheck = i
                 for (let j = 0; j < spacesToCheck; j++) {
 
-                    let me = col[i - j]
-                    let you = col[i - 1 - j]
+                    let me: Cell = cell
+                    let you: Cell = col[i - 1 - j]
                     if (you == null) {
                         col[i - j] = null
                         col[i - 1 - j] = me
-                        console.log(col)
+                        me.coord[1] += 1
+
+                        // console.log(col)
                         checked++
                         continue
 
                     }
-                    if (you == me) {
+                    if (you.value == me.value) {
                         col[i - j] = null
-                        col[i - 1 - j] = me + you
-                        setScore(old => old + me + you)
+                        col[i - 1 - j] = {...you, value : you.value + me.value} as Cell
+                        setScore(old => old + me.value + you.value)
                         checked++
 
                         break
                     }
                 }
+                // Prevent combine if destination already has combine
+                // if (moves.map((mv: Move) => mv[1].toString()).includes(move[1].toString())) move[2] = false
+                // moves.push(move)
+                // console.log(moves)
             }
         })
         if (!checked) return
@@ -172,30 +182,33 @@ const GameView = () => {
     }
     const swipeLeft = (boardCopy: any[]) => {
         let board = boardColsToRows(boardCopy)
+        console.log(boardCopy)
+        console.log(board)
         let checked = 0
         board.forEach((col: any[], ind: number) => {
             for (let i = 1; i < col.length; i++) {
+                let cell: Cell = col[i] as Cell
                 // continue if empty
-                if (col[i] == null) continue
-
+                if (cell == null) continue
+                let cellValue: number = col[i].value
                 // if a number
                 let spacesToCheck = i
                 for (let j = 0; j < spacesToCheck; j++) {
-                    let me = col[i - j]
-                    let you = col[i - 1 - j]
+                    let me: Cell = cell
+                    let you: Cell = col[i - 1 - j]
                     if (you == null) {
                         col[i - j] = null
                         col[i - 1 - j] = me
-                        console.log(col)
+                        // console.log(col)
                         checked++
 
                         continue
 
                     }
-                    if (you == me) {
+                    if (you.value == me.value) {
                         col[i - j] = null
-                        col[i - 1 - j] = me + you
-                        setScore(old => old + me + you)
+                        col[i - 1 - j] = {...you, value : you.value + me.value} as Cell
+                        setScore(old => old + me.value + you.value)
                         checked++
 
                         break
@@ -217,13 +230,13 @@ const GameView = () => {
         let lastTurn: any[][] = getCurrentBoardCopy()
         setTurn(old => old + 1)
         let rand: Coord = getRandomEmptyBlock(newGameBoard)
-        newGameBoard[rand[0]][rand[1]] = 2
+        newGameBoard[rand[0]][rand[1]] = createCell([rand[0], rand[1]])
         // SET HISTORY
         setPreviousTurn(lastTurn)
         // SET CURRENT STATE
         setGameBoard(newGameBoard)
         // CHECK IF BOARD FULL
-        if(isBoardFull(newGameBoard)){
+        if (isBoardFull(newGameBoard)) {
             checkForMoves(newGameBoard)
         }
     }
@@ -332,14 +345,14 @@ const GameView = () => {
                 </div>
                 <div className="flex flex-row gap-4">
 
-                <div id="score-box" className="">
-                    <div className="font-semibold text-neutral-400 text-xs leading-3">SCORE</div>
-                    <div className="font-extrabold text-white text-xl">{score}</div>
-                </div>
-                <div id="turn-box" className="">
-                    <div className="font-semibold text-neutral-400 text-xs leading-3">TURN</div>
-                    <div className="font-extrabold text-white text-xl">{turn}</div>
-                </div>
+                    <div id="score-box" className="">
+                        <div className="font-semibold text-neutral-400 text-xs leading-3">SCORE</div>
+                        <div className="font-extrabold text-white text-xl">{score}</div>
+                    </div>
+                    <div id="turn-box" className="">
+                        <div className="font-semibold text-neutral-400 text-xs leading-3">TURN</div>
+                        <div className="font-extrabold text-white text-xl">{turn}</div>
+                    </div>
                 </div>
             </div>
 
@@ -348,24 +361,52 @@ const GameView = () => {
 
 
             {/* GAME BOARD */}
-            <div id="gameboard" className="bg-white w-48 sm:w-64 h-48 sm:h-64 text-black flex flex-row">
-                {gameBoard.map((col: number[], indx: number) => {
+            <div id="gameboard" className="bg-white w-48 sm:w-64 h-48 sm:h-64 text-black flex flex-row relative">
+
+                {/* CELLS */}
+                {gameBoard.map((col: Cell[], indx: number) => {
                     return (
-                        <div className="flex flex-col basis-1/4" key={`col-${indx}`}>
-                            {col.map((row: number, ind2: number) => {
+                        <div className="flex flex-col basis-1/4 relative" key={`col-${indx}`}>
+                            {col.map((cell: Cell, ind2: number) => {
                                 return (
+
                                     <div className="flex flex-row items-center justify-center border-2 basis-1/4 font-bold text-neutral-600" key={`col-${indx}-row-${ind2}`} style={{
                                         // background: `rgba(${255 / row},0,0,1)`
                                     }}>
-                                        {row == null ? "" : row}
+                                        {/* {cell.value == null ? "" : cell.value} */}
                                     </div>
                                 )
+
                             })}
                         </div>
                     )
                 })}
+
+                {/* ACTIVE CELLS */}
+                <div id="active-cells" className="absolute top-0 left-0 right-0 bottom-0  w-48 sm:w-64 h-48 sm:h-64">
+                    {/* {
+                        gameBoard.flat().map((cell: Cell|any, index: number)=>{
+                            if(cell != null) return(
+                                <Block key={`${cell.id}`} cell={cell} coord={cell.coord}></Block>
+                            )
+                        })
+                    } */}
+                    {gameBoard.map((col: Cell[], indx: number) => {
+                        return (
+                           
+                                col.map((cell: Cell, ind2: number) => {
+                                    if (cell != null) return (
+                                        <Block key={`${cell.id}`} cell={cell} coord={[indx, ind2]}></Block>
+
+                                    )
+
+                                })
+                        )
+                    })}
+                </div>
+
             </div>
-            <NewGamePopup confirmNewGame={confirmNewGame} onClose={()=> setNewGame(false)} open={newGame}></NewGamePopup>
+            <NewGamePopup confirmNewGame={confirmNewGame} onClose={() => setNewGame(false)} open={newGame}></NewGamePopup>
         </div>
     )
 
@@ -378,23 +419,32 @@ interface ModalProps {
 }
 const NewGamePopup = ({ open, onClose, confirmNewGame }: ModalProps) => {
     return (
-        <Modal title="New Game" open={open} onOk={()=> confirmNewGame()} onCancel={()=> onClose()} okText={"Confirm"} cancelText={"Cancel"}>
-        <p>Are you sure you want to end your current game?</p>
-      </Modal>
-      
+        <Modal title="New Game" open={open} onOk={() => confirmNewGame()} onCancel={() => onClose()} okText={"Confirm"} cancelText={"Cancel"}>
+            <p>Are you sure you want to end your current game?</p>
+        </Modal>
+
     )
 }
 
 interface blockprop {
-    num: number
+    cell: Cell,
+    coord: Coord
 }
 
-const Block = ({ num }: blockprop) => {
+const Block = ({ cell, coord }: blockprop) => {
     return (
-        <div className="h-12 w-12">
-            {num}
+        <div className={`flex absolute flex-row items-center justify-center border-2 w-1/4 h-1/4 font-bold text-neutral-600 transition-all ${BoxPosition(coord)}`} data-id={cell.id} >
+            {cell.value}
         </div>
     )
 }
+
+const BoxPosition = (coord: Coord): string => {
+    let left = coord[0] == 0 ? "0" : (coord[0] == 1 ? "1/4" : (coord[0] == 2 ? "1/2" : "3/4"))
+    let top = coord[1] == 0 ? "0" : (coord[1] == 1 ? "1/4" : (coord[1] == 2 ? "1/2" : "3/4"))
+    return `left-${left} top-${top} `
+}
+
+
 
 export default GameView
