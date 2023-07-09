@@ -13,3 +13,8 @@ export const createCell = (coord: Coord): Cell => {
         coord: coord
     }
 }
+export const combineCells = (cells: Cell[]) => {
+    let newCell = createCell(cells[0].coord)
+    newCell.value = cells[0].value + cells[1].value
+    return newCell
+}

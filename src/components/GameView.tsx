@@ -1,5 +1,5 @@
-import { Cell, createCell } from "@/data/Cells"
-import { Coord, Move, newMove } from "@/data/Moves"
+import { Cell, combineCells, createCell } from "@/data/Cells"
+import { Coord, Move, canIMoveTo, newMove } from "@/data/Moves"
 import { checkForMoves, findHighest } from "@/util/board"
 import Modal from "antd/lib/modal/Modal"
 import { useState, useEffect, useRef } from "react"
@@ -95,33 +95,32 @@ const GameView = () => {
 
     // DIRECTIONS
     const swipeDown = (boardCopy: any[]) => {
-        console.log(boardCopy)
         let checked = 0
         boardCopy.forEach((col: any[], ind: number) => {
             for (let i = col.length - 2; i >= 0; i--) {
                 let cell: Cell = col[i] as Cell
                 // continue if empty
                 if (cell == null) continue
-                let cellValue: number = col[i].value
 
-                // if a number
-                // console.log(i, cellValue)
                 let spacesToCheck = 3 - i
                 for (let j = 0; j < spacesToCheck; j++) {
                     let me: Cell = cell
                     let you: Cell = col[i + 1 + j]
+                    let canIMoveDown: boolean = canIMoveTo(me, you)
+                    if(!canIMoveDown) break
                     if (you == null) {
                         col[i + j] = null
                         col[i + 1 + j] = me
-                        me.coord[1] -= 1
+                        me.coord = [ind, i + 1 + j]
                         // console.log(col)
                         checked++
                         continue
                     }
                     if (you.value == me.value) {
+                        me.coord = you.coord
+                        let combinedCell: Cell[] = [you, me]
                         col[i + j] = null
-                        col[i + 1 + j] = {...you, value : you.value + me.value} as Cell
-                        setScore(old => old + me.value + you.value)
+                        col[i + 1 + j] = combinedCell
                         checked++
                         break
                     }
@@ -132,11 +131,10 @@ const GameView = () => {
         console.log('setting board')
         endTurn(boardCopy)
     }
-    useEffect(()=>{
-            console.log(gameBoard.flat(1))
-    },[gameBoard])
+    // useEffect(()=>{
+    //         console.log(gameBoard.flat(1))
+    // },[gameBoard])
     const swipeUp = (boardCopy: any[]) => {
-        console.log(boardCopy)
         let checked = 0
         boardCopy.forEach((col: any[], ind: number) => {
             // let moves: Move[] = []
@@ -144,37 +142,30 @@ const GameView = () => {
                 let cell: Cell = col[i] as Cell
                 // continue if empty
                 if (cell == null) continue
-                let cellValue: number = col[i].value
-                // continue if empty
 
                 let spacesToCheck = i
                 for (let j = 0; j < spacesToCheck; j++) {
-
                     let me: Cell = cell
                     let you: Cell = col[i - 1 - j]
+                    let canIMoveDown: boolean = canIMoveTo(me, you)
+                    if(!canIMoveDown) break
                     if (you == null) {
                         col[i - j] = null
                         col[i - 1 - j] = me
-                        me.coord[1] += 1
-
+                        me.coord = [ind, i - j - 1]
                         // console.log(col)
                         checked++
                         continue
-
                     }
                     if (you.value == me.value) {
+                        me.coord = you.coord
+                        let combinedCell: Cell[] = [you, me]
                         col[i - j] = null
-                        col[i - 1 - j] = {...you, value : you.value + me.value} as Cell
-                        setScore(old => old + me.value + you.value)
+                        col[i - 1 - j] = combinedCell
                         checked++
-
                         break
                     }
                 }
-                // Prevent combine if destination already has combine
-                // if (moves.map((mv: Move) => mv[1].toString()).includes(move[1].toString())) move[2] = false
-                // moves.push(move)
-                // console.log(moves)
             }
         })
         if (!checked) return
@@ -182,35 +173,65 @@ const GameView = () => {
     }
     const swipeLeft = (boardCopy: any[]) => {
         let board = boardColsToRows(boardCopy)
-        console.log(boardCopy)
         console.log(board)
         let checked = 0
+        // for(let i = 0; i < boardCopy.length; i++){
+        //     for(let j = 1; j < boardCopy[0].length; j++){
+        //         let cell: Cell = boardCopy[j][i] as Cell
+        //         if (cell == null) continue
+        //         let spacesToCheck = j
+        //         for(let s = 0; s < spacesToCheck; s++){
+        //             console.log(j - s - 1)
+        //             let me: Cell = cell
+        //             let you: Cell = boardCopy[j - s - 1][j]
+        //             let canIMoveDown: boolean = canIMoveTo(me, you)
+        //             if(!canIMoveDown) break
+        //             if (you == null) {
+        //                 boardCopy[j][i] = null
+        //                 boardCopy[j - s - 1][i] = me
+        //                 me.coord = [j-s - 1,i]
+        //                 checked++
+        //                 continue
+        //             }
+        //             if (you.value == me.value) {
+        //                 me.coord = you.coord
+        //                 let combinedCell: Cell[] = [you, me]
+        //                 boardCopy[j][i] = null
+        //                 boardCopy[j - s - 1][i] = combinedCell
+        //                 checked++
+        //                 break
+        //             }
+        //         }
+        //     }
+        // }
+
+
         board.forEach((col: any[], ind: number) => {
             for (let i = 1; i < col.length; i++) {
                 let cell: Cell = col[i] as Cell
                 // continue if empty
                 if (cell == null) continue
-                let cellValue: number = col[i].value
                 // if a number
                 let spacesToCheck = i
                 for (let j = 0; j < spacesToCheck; j++) {
                     let me: Cell = cell
                     let you: Cell = col[i - 1 - j]
+                    let canIMoveDown: boolean = canIMoveTo(me, you)
+                    if(!canIMoveDown) break
                     if (you == null) {
                         col[i - j] = null
                         col[i - 1 - j] = me
-                        // console.log(col)
+                        me.coord = [i - j - 1, ind]
+
                         checked++
-
                         continue
-
                     }
                     if (you.value == me.value) {
+                        me.coord = you.coord
+                        let combinedCell: Cell[] = [you, me]
                         col[i - j] = null
-                        col[i - 1 - j] = {...you, value : you.value + me.value} as Cell
-                        setScore(old => old + me.value + you.value)
+                        col[i - 1 - j] = combinedCell
                         checked++
-
                         break
                     }
                 }
@@ -227,6 +248,22 @@ const GameView = () => {
 
     // Check if game over and add new 2
     const endTurn = (newGameBoard: any[][]) => {
+        // CHECK FOR DOUBLE CELLS TO COMBINE AND GET SCORE
+        let combinedCells: Cell[][] = newGameBoard.flat().filter((cell: any)=>{
+            if(Array.isArray(cell)) return true
+            return false
+        })
+        let score = 0
+        // COMBINE ALL COMBINED CELLS
+        combinedCells.forEach((cells: Cell[]) => {
+            let newCell = combineCells(cells)
+            score += newCell.value
+            newGameBoard[newCell.coord[0]][newCell.coord[1]] = newCell
+        })
+        console.log(newGameBoard)
+        // SET SCORE
+        setScore(old => old + score)
+        // SET HISTORY
         let lastTurn: any[][] = getCurrentBoardCopy()
         setTurn(old => old + 1)
         let rand: Coord = getRandomEmptyBlock(newGameBoard)
@@ -295,7 +332,6 @@ const GameView = () => {
         setScore(gameState.score)
         setGameBoard(gameState.gameboard)
     }
-
     useEffect(() => {
         initializeGame()
         // loadState()

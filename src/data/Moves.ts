@@ -1,3 +1,5 @@
+import { Cell } from "./Cells"
+
 export type Move = [[number, number], [number, number], boolean]
 export type Turn = Move[]
 export type Coord = [number, number]
@@ -18,4 +20,11 @@ export const MoveLeft = (move: Move): Move => {
 export const MoveRight = (move: Move): Move => {
     move[1][1] += 1
     return move
+}
+
+export const canIMoveTo = (from: Cell, to: Cell|null|Cell[]): boolean => {
+    if(to == null) return true
+    if(Array.isArray(to)) return false
+    if(to.value == from.value) return true
+    return false
 }
