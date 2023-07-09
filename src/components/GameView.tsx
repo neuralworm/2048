@@ -175,37 +175,6 @@ const GameView = () => {
         let board = boardColsToRows(boardCopy)
         console.log(board)
         let checked = 0
-        // for(let i = 0; i < boardCopy.length; i++){
-        //     for(let j = 1; j < boardCopy[0].length; j++){
-        //         let cell: Cell = boardCopy[j][i] as Cell
-        //         if (cell == null) continue
-        //         let spacesToCheck = j
-        //         for(let s = 0; s < spacesToCheck; s++){
-        //             console.log(j - s - 1)
-        //             let me: Cell = cell
-        //             let you: Cell = boardCopy[j - s - 1][j]
-        //             let canIMoveDown: boolean = canIMoveTo(me, you)
-        //             if(!canIMoveDown) break
-        //             if (you == null) {
-        //                 boardCopy[j][i] = null
-        //                 boardCopy[j - s - 1][i] = me
-        //                 me.coord = [j-s - 1,i]
-        //                 checked++
-        //                 continue
-        //             }
-        //             if (you.value == me.value) {
-        //                 me.coord = you.coord
-        //                 let combinedCell: Cell[] = [you, me]
-        //                 boardCopy[j][i] = null
-        //                 boardCopy[j - s - 1][i] = combinedCell
-        //                 checked++
-        //                 break
-        //             }
-        //         }
-        //     }
-        // }
-
-
         board.forEach((col: any[], ind: number) => {
             for (let i = 1; i < col.length; i++) {
                 let cell: Cell = col[i] as Cell
@@ -453,14 +422,16 @@ const GameView = () => {
 
                 {/* ACTIVE CELLS */}
                 <div id="active-cells" className="absolute top-0 left-0 right-0 bottom-0  w-48 sm:w-64 h-48 sm:h-64">
-                    {/* {
+                    {/* NON-NESTED MAPPED ARRAY METHOD */}
+                    {
                         gameBoard.flat().map((cell: Cell|any, index: number)=>{
                             if(cell != null) return(
                                 <Block key={`${cell.id}`} cell={cell} coord={cell.coord}></Block>
                             )
                         })
-                    } */}
-                    {gameBoard.map((col: Cell[], indx: number) => {
+                    }
+                    {/* NESTED COLUMN LOOPS METHOD */}
+                    {/* {gameBoard.map((col: Cell[], indx: number) => {
                         return (
                            
                                 col.map((cell: Cell, ind2: number) => {
@@ -471,7 +442,7 @@ const GameView = () => {
 
                                 })
                         )
-                    })}
+                    })} */}
                 </div>
 
             </div>
