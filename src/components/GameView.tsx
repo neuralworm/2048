@@ -4,7 +4,7 @@ import { checkForMoves, findHighest } from "@/util/board"
 import Modal from "antd/lib/modal/Modal"
 import { useState, useEffect, useRef } from "react"
 import { useSwipeable, SwipeDirections } from "react-swipeable"
-
+import CellStyle from '@/data/CellStyle'
 const defaultGameBoard: any[][] = [[null, null, null, null], [null, null, null, null], [null, null, null, null], [null, null, null, null]]
 
 const GameView = () => {
@@ -242,8 +242,41 @@ const GameView = () => {
 
     }
     const swipeRight = (boardCopy: any[]) => {
+        let board = boardColsToRows(boardCopy)
+        let checked = 0
+        board.forEach((col: any[], ind: number) => {
+            for (let i = col.length - 2; i >= 0; i--) {
+                let cell: Cell = col[i] as Cell
+                // continue if empty
+                if (cell == null) continue
+                // if a number
+                let spacesToCheck = 3 - i
+                for (let j = 0; j < spacesToCheck; j++) {
+                    let me: Cell = cell
+                    let you: Cell = col[i + 1 + j]
+                    let canIMoveDown: boolean = canIMoveTo(me, you)
+                    if(!canIMoveDown) break
+                    if (you == null) {
+                        col[i + j] = null
+                        col[i + 1 + j] = me
+                        me.coord = [i + j + 1, ind]
 
-
+                        checked++
+                        continue
+                    }
+                    if (you.value == me.value) {
+                        me.coord = you.coord
+                        let combinedCell: Cell[] = [you, me]
+                        col[i + j] = null
+                        col[i + 1 + j] = combinedCell
+                        checked++
+                        break
+                    }
+                }
+            }
+        })
+        if (!checked) return
+        endTurn(boardRowsToCols(board))
     }
 
     // Check if game over and add new 2
@@ -469,8 +502,11 @@ interface blockprop {
 
 const Block = ({ cell, coord }: blockprop) => {
     return (
-        <div className={`flex absolute flex-row items-center justify-center border-2 w-1/4 h-1/4 font-bold text-neutral-600 transition-all ${BoxPosition(coord)}`} data-id={cell.id} >
+        <div className={`enter flex absolute flex-row items-center justify-center border-2 w-1/4 h-1/4 font-bold text-neutral-600 transition-all ${BoxPosition(coord)} ${CellStyle[cell.value]}`} data-id={cell.id} >
+            <div className="scale-enter">
+
             {cell.value}
+            </div>
         </div>
     )
 }

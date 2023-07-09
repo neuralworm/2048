@@ -1,7 +1,9 @@
+import { Cell } from "@/data/Cells"
+
 export const findHighest = (gameBoard: any[][]): number => {
     let highest = 0
-    gameBoard.forEach((gameCol: any[])=> gameCol.forEach((cell: any) => {
-        if(cell !== null && cell > highest) highest = cell
+    gameBoard.forEach((gameCol: any[])=> gameCol.forEach((cell: Cell) => {
+        if(cell !== null && cell.value > highest) highest = cell.value
     }))
     return highest
 }
