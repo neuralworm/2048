@@ -378,7 +378,7 @@ const GameView = () => {
             {/* GAME STATE CONTROLS */}
             <div className="flex flex-row justify-between mb-4">
                 <button onClick={() => setNewGame(true)} className="bg-neutral-300 text-black p-2 text-[12px] sm:text-xs font-bold">NEW GAME</button>
-                <button disabled={previousTurn == null} onClick={() => undoTurn()} className={`${previousTurn != null ? "bg-neutral-50" : "bg-neutral-600"} text-black p-2 text-[12px] sm:text-xs font-bold`}>UNDO TURN</button>
+                <button disabled={previousTurn == null} onClick={() => undoTurn()} className={`${previousTurn != null ? "bg-neutral-50" : "bg-neutral-600"} text-black p-2 text-[12px] sm:text-xs font-bold`}>UNDO TURN ({previousTurn == null ? 0 : 1})</button>
             </div>
 
 
