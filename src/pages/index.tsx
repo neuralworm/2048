@@ -5,6 +5,7 @@ import {message} from 'antd'
 import {useState} from 'react'
 import SettingsView from '@/components/SettingsView'
 import { Snackbar } from '@mui/material'
+import Head from 'next/head'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -27,8 +28,15 @@ export default function Home() {
   }
   return (
     <main
-      className={`flex min-h-screen flex-col items-center justify-center p-24 ${inter.className}`}
+      className={`flex min-h-full flex-col items-center justify-center md:p-24 ${inter.className}`}
     >
+      {/* HEAD / SEO */}
+      <Head>
+        <title>Play 2048</title>
+        <meta name="description" content="Play 2048 in your broowser for free.  Check leaderboards and previous high scores." />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
+      </Head>
+
       <SettingsView touch={touch} dark={dark} toggleDark={toggleDark}></SettingsView>
       <Snackbar anchorOrigin={{vertical: "bottom", horizontal: "center"}} autoHideDuration={1000} open={alert} message={message} onClose={() => clearMessage()}></Snackbar>
      

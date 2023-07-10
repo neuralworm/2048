@@ -39,7 +39,8 @@ const GameView = () => {
         initializeGame()
     }
     const config = {
-        trackMouse: true
+        trackMouse: true,
+        preventScrollOnSwipe: true
     }
     const handlers = useSwipeable({
         onSwiped: (event) => {

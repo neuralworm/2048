@@ -15,7 +15,9 @@
     --background-end-rgb: 0, 0, 0;
   }
 }
-
+html{
+  height:100%
+}
 body {
   color: rgb(var(--foreground-rgb));
   background: linear-gradient(
@@ -24,6 +26,7 @@ body {
       rgb(var(--background-end-rgb))
     )
     rgb(var(--background-start-rgb));
+    height: 100%;
 }
 @keyframes enter{
   from {
@@ -47,4 +50,7 @@ body {
 .scale-enter{
   animation: scaleEnter .4s cubic-bezier(0.68, -0.6, 0.32, 1.6);
 
+}
+#__next{
+  height: 100%
 }
