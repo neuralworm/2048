@@ -473,10 +473,11 @@ interface blockprop {
 
 const Block = ({ cell, coord }: blockprop) => {
     return (
-        <div className={` flex absolute flex-row items-center justify-center border-2 w-1/4 h-1/4 font-bold text-neutral-600  ${BoxPosition(coord)} ${CellStyle[cell.value]}`} data-id={cell.id} >
+        <div className={`flex absolute flex-row items-center justify-center border-2 w-1/4 h-1/4 font-bold text-neutral-600 transition-speed ${BoxPosition(coord)} ${CellStyle[cell.value]}`} data-id={cell.id} style={{
+            transform: `translateX(${coord[0] * 3}rem) translateY(${coord[1] * 3}rem)`,
+        }}>
             <div className="">
-
-            {cell.value}
+                {cell.value}
             </div>
         </div>
     )
@@ -485,7 +486,7 @@ const Block = ({ cell, coord }: blockprop) => {
 const BoxPosition = (coord: Coord): string => {
     let left = coord[0] == 0 ? "0" : (coord[0] == 1 ? "1/4" : (coord[0] == 2 ? "1/2" : "3/4"))
     let top = coord[1] == 0 ? "0" : (coord[1] == 1 ? "1/4" : (coord[1] == 2 ? "1/2" : "3/4"))
-    return `left-${left} top-${top} `
+    return `translate-x-${left} translate-y-${top} `
 }
 
 

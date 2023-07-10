@@ -54,3 +54,6 @@ body {
 #__next{
   height: 100%
 }
+.transition-speed{
+  transition: transform .1s;
+}

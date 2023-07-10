@@ -15,8 +15,6 @@ module.exports = {
     },
   },
   safelist: [
-    "top-0", "top-1/4", "top-1/2", "top-3/4",
-    "left-0", "left-1/4", "left-1/2", "left-3/4",
     {
       pattern: /bg-(neutral)-/,
       pattern: /text-(neutral)-/,
