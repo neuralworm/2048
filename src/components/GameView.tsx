@@ -366,8 +366,8 @@ const GameView = () => {
         }
     }
     return (
-        <div {...handlers} className="cursor-grab select-nones" id="drag-area">
-
+        <div {...handlers} className="cursor-grab select-none" id="drag-area">
+            <div className="text-4xl font-bold mb-8 text-center font-mono">PLAY 2048</div>
 
             {/* GAME STATE CONTROLS */}
             <div className="flex flex-row justify-between mb-4">
@@ -399,7 +399,7 @@ const GameView = () => {
 
 
             {/* GAME BOARD */}
-            <div id="gameboard" className="bg-white w-64 h-64  text-black flex flex-row relative">
+            <div id="gameboard" className="rounded-md w-64 h-64  text-black flex flex-row relative bg-neutral-400">
 
                 {/* CELLS */}
                 {gameBoard.map((col: Cell[], indx: number) => {
@@ -408,7 +408,7 @@ const GameView = () => {
                             {col.map((cell: Cell, ind2: number) => {
                                 return (
 
-                                    <div className="flex flex-row items-center justify-center border-2 basis-1/4 font-bold text-neutral-600" key={`col-${indx}-row-${ind2}`} style={{
+                                    <div className="flex flex-row items-center justify-center border-2 rounded-sm basis-1/4 font-bold text-neutral-600" key={`col-${indx}-row-${ind2}`} style={{
                                         // background: `rgba(${255 / row},0,0,1)`
                                     }}>
                                         {/* {cell.value == null ? "" : cell.value} */}
@@ -473,12 +473,12 @@ interface blockprop {
 
 const Block = ({ cell, coord }: blockprop) => {
     return (
-        <div className={`flex absolute flex-row items-center justify-center border-2 w-1/4 h-1/4 font-bold text-neutral-600 transition-speed ${BoxPosition(coord)} ${CellStyle[cell.value]}`} data-id={cell.id} style={{
+        <div className={`flex absolute flex-row items-center text-3xl font-bold justify-center w-1/4 h-1/4 p-1 transition-speed ${BoxPosition(coord)} `} data-id={cell.id} style={{
             transform: `translateX(${coord[0] * 4}rem) translateY(${coord[1] * 4}rem)`,
             WebkitTransform: `translateX(${coord[0] * 4}rem) translateY(${coord[1] * 4}rem)`,
             msTransform: `translateX(${coord[0] * 4}rem) translateY(${coord[1] * 4}rem)`,
         }}>
-            <div className="">
+            <div className="bg-white text-neutral-600 w-full h-full flex items-center justify-center rounded-md">
                 {cell.value}
             </div>
         </div>
