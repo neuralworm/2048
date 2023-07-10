@@ -5,7 +5,6 @@ import {message} from 'antd'
 import {useState} from 'react'
 import SettingsView from '@/components/SettingsView'
 import { Snackbar } from '@mui/material'
-import DarkModeIcon from '@mui/icons-material/DarkMode'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -20,6 +19,8 @@ export default function Home() {
     toggleAlert(true)
     setMessage(`Theme set to ${dark ? "Dark" : "Light"}.`)
   }
+  // TOUCH
+  const [touch, setTouch] = useState<boolean>(false)
   const clearMessage = () => {
     toggleAlert(false)
     setMessage("")
@@ -28,7 +29,7 @@ export default function Home() {
     <main
       className={`flex min-h-screen flex-col items-center justify-center p-24 ${inter.className}`}
     >
-      <SettingsView dark={dark} toggleDark={toggleDark}></SettingsView>
+      <SettingsView touch={touch} dark={dark} toggleDark={toggleDark}></SettingsView>
       <Snackbar anchorOrigin={{vertical: "bottom", horizontal: "center"}} autoHideDuration={1000} open={alert} message={message} onClose={() => clearMessage()}></Snackbar>
      
 

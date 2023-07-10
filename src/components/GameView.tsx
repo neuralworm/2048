@@ -371,24 +371,24 @@ const GameView = () => {
 
             {/* GAME STATE CONTROLS */}
             <div className="flex flex-row justify-between mb-4">
-                <button onClick={() => setNewGame(true)} className="bg-neutral-300 text-black p-2 text-xs font-bold">NEW GAME</button>
-                <button disabled={previousTurn == null} onClick={() => undoTurn()} className={`${previousTurn != null ? "bg-neutral-50" : "bg-neutral-600"} text-black p-2 text-xs font-bold`}>UNDO TURN</button>
+                <button onClick={() => setNewGame(true)} className="bg-neutral-300 text-black p-2 text-[12px] sm:text-xs font-bold">NEW GAME</button>
+                <button disabled={previousTurn == null} onClick={() => undoTurn()} className={`${previousTurn != null ? "bg-neutral-50" : "bg-neutral-600"} text-black p-2 text-[12px] sm:text-xs font-bold`}>UNDO TURN</button>
             </div>
 
 
             {/* STATS */}
-            <div className="flex flex-row justify-between mb-2 text-center">
-                <div id="highest-number" className="text-2xl bg-neutral-600 w-28 flex items-center justify-center font-bold">
+            <div className="flex flex-row justify-between mb-4 text-center">
+                <div id="highest-number" className="text-lg sm:text-2xl bg-neutral-600 w-16 sm:w-28 flex items-center justify-center font-bold">
                     {findHighest(gameBoard)}
                 </div>
                 <div className="flex flex-row gap-4">
 
                     <div id="score-box" className="">
-                        <div className="font-semibold text-neutral-400 text-xs leading-3">SCORE</div>
+                        <div className="font-semibold text-neutral-400 text-[12px] sm:text-xs leading-3">SCORE</div>
                         <div className="font-extrabold text-white text-xl">{score}</div>
                     </div>
                     <div id="turn-box" className="">
-                        <div className="font-semibold text-neutral-400 text-xs leading-3">TURN</div>
+                        <div className="font-semibold text-neutral-400 text-[12px] sm:text-xs leading-3">TURN</div>
                         <div className="font-extrabold text-white text-xl">{turn}</div>
                     </div>
                 </div>
