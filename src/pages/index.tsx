@@ -29,7 +29,7 @@ export default function Home() {
   }
   return (
     <main
-      className={`flex min-h-full flex-col items-center justify-center md:p-24 ${inter.className}`}
+      className={`flex min-h-full flex-col items-center justify-center py-24 md:p-24 ${inter.className}`}
     >
       {/* HEAD / SEO */}
       <Head>

@@ -7,7 +7,7 @@ interface Props {
 }
 const SettingsView = ({ toggleDark, dark, touch }: Props) => {
     return (
-        <div className="absolute mt-8 top-0 left-0 right-0 flex flex-row justify-center items-center gap-8 ">
+        <div className="absolute mt-6 top-0 left-0 right-0 flex flex-row justify-center items-center gap-8 ">
             <button className='bg-white rounded-lg w-16 h-8' onClick={() => toggleDark()}>
                 <DarkModeIcon color={dark ? "disabled" : "primary"}></DarkModeIcon>
             </button>

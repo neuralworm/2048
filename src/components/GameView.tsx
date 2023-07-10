@@ -54,25 +54,73 @@ const GameView = () => {
     // SCORE
     const [score, setScore] = useState<number>(0)
     const [scoreChange, setScoreChange] = useState<number>()
-    // Handlers
+
+
+    // CONTROLLERS TO HANDLE INPUT AND INVOKE START TURN METHOD WITH STRING ARGUMENT
     const swipe = (dir: SwipeDirections) => {
         switch (dir) {
             case "Down":
-                swipeDown(getCurrentBoardCopy())
+                startTurn("DOWN")
                 break;
             case "Up":
-                swipeUp(getCurrentBoardCopy())
+                startTurn("UP")
                 break;
             case "Left":
-                swipeLeft(getCurrentBoardCopy())
+                startTurn("LEFT")
                 break;
             case "Right":
-                swipeRight(getCurrentBoardCopy())
+                startTurn("RIGHT")
                 break;
             default:
                 break;
         }
     }
+    const keys = (e: KeyboardEvent) => {
+        // console.log(e)
+        e.preventDefault()
+        switch (e.key) {
+            case "ArrowUp":
+                startTurn("UP")
+                break;
+            case "ArrowDown":
+                startTurn("DOWN")
+                break;
+            case "ArrowLeft":
+                startTurn("LEFT")
+                break;
+            case "ArrowRight":
+                startTurn("RIGHT")
+                break;
+
+            default:
+                break;
+        }
+    }
+    // RECEIVE CONTROL INPUT AND CALL CORRECT METHOD
+    const startTurn = (direction: string) => {
+        // SET HISTORY
+        let lastTurn: any[][] = getCurrentBoardCopy()
+        setPreviousTurn(lastTurn)
+        switch (direction) {
+            case "UP":
+                swipeUp(getCurrentBoardCopy())
+                break;
+            case "DOWN":
+                swipeDown(getCurrentBoardCopy())
+                break;
+            case "LEFT":
+                swipeLeft(getCurrentBoardCopy())
+                break;
+            case "RIGHT":
+                swipeRight(getCurrentBoardCopy())
+                break;
+
+            default:
+                break;
+        }
+    }
+
+
     const getCurrentBoardCopy = (): any[][] => {
         return JSON.parse(JSON.stringify([[...boardRef.current[0]], [...boardRef.current[1]], [...boardRef.current[2]], ...[boardRef.current[3]]]))
     }
@@ -131,9 +179,6 @@ const GameView = () => {
         if (!checked) return
         endTurn(boardCopy)
     }
-    // useEffect(()=>{
-    //         console.log(gameBoard.flat(1))
-    // },[gameBoard])
     const swipeUp = (boardCopy: any[]) => {
         let checked = 0
         boardCopy.forEach((col: any[], ind: number) => {
@@ -265,13 +310,11 @@ const GameView = () => {
         // console.log(newGameBoard)
         // SET SCORE
         setScore(old => old + score)
-        // SET HISTORY
-        let lastTurn: any[][] = getCurrentBoardCopy()
+
+        // INCREMENT
         setTurn(old => old + 1)
         let rand: Coord = getRandomEmptyBlock(newGameBoard)
         newGameBoard[rand[0]][rand[1]] = createCell([rand[0], rand[1]])
-        // SET HISTORY
-        setPreviousTurn(lastTurn)
         // SET CURRENT STATE
         setGameBoard(newGameBoard)
         // CHECK IF BOARD FULL
@@ -345,27 +388,7 @@ const GameView = () => {
 
         }
     }, [])
-    const keys = (e: KeyboardEvent) => {
-        // console.log(e)
-        e.preventDefault()
-        switch (e.key) {
-            case "ArrowUp":
-                swipeUp(getCurrentBoardCopy())
-                break;
-            case "ArrowDown":
-                swipeDown(getCurrentBoardCopy())
-                break;
-            case "ArrowLeft":
-                swipeLeft(getCurrentBoardCopy())
-                break;
-            case "ArrowRight":
-                swipeRight(getCurrentBoardCopy())
-                break;
 
-            default:
-                break;
-        }
-    }
     return (
         <div {...handlers} className="cursor-grab select-none" id="drag-area">
             <div id="title-container">
