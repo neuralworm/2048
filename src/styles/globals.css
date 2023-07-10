@@ -45,10 +45,10 @@ body {
   }
 }
 .enter{
-  animation: enter .4s cubic-bezier(0.68, -0.6, 0.32, 1.6);
+  animation: enter .4s linear;
 }
 .scale-enter{
-  animation: scaleEnter .4s cubic-bezier(0.68, -0.6, 0.32, 1.6);
+  animation: scaleEnter .4s linear;
 
 }
 #__next{

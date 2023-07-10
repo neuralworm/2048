@@ -129,7 +129,6 @@ const GameView = () => {
             }
         })
         if (!checked) return
-        console.log('setting board')
         endTurn(boardCopy)
     }
     // useEffect(()=>{
@@ -174,7 +173,7 @@ const GameView = () => {
     }
     const swipeLeft = (boardCopy: any[]) => {
         let board = boardColsToRows(boardCopy)
-        console.log(board)
+        // console.log(board)
         let checked = 0
         board.forEach((col: any[], ind: number) => {
             for (let i = 1; i < col.length; i++) {
@@ -263,7 +262,7 @@ const GameView = () => {
             score += newCell.value
             newGameBoard[newCell.coord[0]][newCell.coord[1]] = newCell
         })
-        console.log(newGameBoard)
+        // console.log(newGameBoard)
         // SET SCORE
         setScore(old => old + score)
         // SET HISTORY
@@ -474,8 +473,8 @@ interface blockprop {
 
 const Block = ({ cell, coord }: blockprop) => {
     return (
-        <div className={`enter flex absolute flex-row items-center justify-center border-2 w-1/4 h-1/4 font-bold text-neutral-600 transition-all ${BoxPosition(coord)} ${CellStyle[cell.value]}`} data-id={cell.id} >
-            <div className="scale-enter">
+        <div className={` flex absolute flex-row items-center justify-center border-2 w-1/4 h-1/4 font-bold text-neutral-600  ${BoxPosition(coord)} ${CellStyle[cell.value]}`} data-id={cell.id} >
+            <div className="">
 
             {cell.value}
             </div>
