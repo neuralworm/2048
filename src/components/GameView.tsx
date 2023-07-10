@@ -475,6 +475,8 @@ const Block = ({ cell, coord }: blockprop) => {
     return (
         <div className={`flex absolute flex-row items-center justify-center border-2 w-1/4 h-1/4 font-bold text-neutral-600 transition-speed ${BoxPosition(coord)} ${CellStyle[cell.value]}`} data-id={cell.id} style={{
             transform: `translateX(${coord[0] * 4}rem) translateY(${coord[1] * 4}rem)`,
+            WebkitTransform: `translateX(${coord[0] * 4}rem) translateY(${coord[1] * 4}rem)`,
+            msTransform: `translateX(${coord[0] * 4}rem) translateY(${coord[1] * 4}rem)`,
         }}>
             <div className="">
                 {cell.value}
