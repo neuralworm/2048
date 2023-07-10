@@ -399,7 +399,7 @@ const GameView = () => {
 
 
             {/* GAME BOARD */}
-            <div id="gameboard" className="bg-white w-48 sm:w-64 h-48 sm:h-64 text-black flex flex-row relative">
+            <div id="gameboard" className="bg-white w-64 h-64  text-black flex flex-row relative">
 
                 {/* CELLS */}
                 {gameBoard.map((col: Cell[], indx: number) => {
@@ -421,7 +421,7 @@ const GameView = () => {
                 })}
 
                 {/* ACTIVE CELLS */}
-                <div id="active-cells" className="absolute top-0 left-0 right-0 bottom-0  w-48 sm:w-64 h-48 sm:h-64">
+                <div id="active-cells" className="absolute top-0 left-0 right-0 bottom-0 w-64 h-64">
                     {/* NON-NESTED MAPPED ARRAY METHOD */}
                     {
                         gameBoard.flat().map((cell: Cell|any, index: number)=>{
@@ -474,7 +474,7 @@ interface blockprop {
 const Block = ({ cell, coord }: blockprop) => {
     return (
         <div className={`flex absolute flex-row items-center justify-center border-2 w-1/4 h-1/4 font-bold text-neutral-600 transition-speed ${BoxPosition(coord)} ${CellStyle[cell.value]}`} data-id={cell.id} style={{
-            transform: `translateX(${coord[0] * 3}rem) translateY(${coord[1] * 3}rem)`,
+            transform: `translateX(${coord[0] * 4}rem) translateY(${coord[1] * 4}rem)`,
         }}>
             <div className="">
                 {cell.value}
