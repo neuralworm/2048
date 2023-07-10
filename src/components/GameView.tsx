@@ -108,7 +108,7 @@ const GameView = () => {
                     let me: Cell = cell
                     let you: Cell = col[i + 1 + j]
                     let canIMoveDown: boolean = canIMoveTo(me, you)
-                    if(!canIMoveDown) break
+                    if (!canIMoveDown) break
                     if (you == null) {
                         col[i + j] = null
                         col[i + 1 + j] = me
@@ -148,7 +148,7 @@ const GameView = () => {
                     let me: Cell = cell
                     let you: Cell = col[i - 1 - j]
                     let canIMoveDown: boolean = canIMoveTo(me, you)
-                    if(!canIMoveDown) break
+                    if (!canIMoveDown) break
                     if (you == null) {
                         col[i - j] = null
                         col[i - 1 - j] = me
@@ -186,7 +186,7 @@ const GameView = () => {
                     let me: Cell = cell
                     let you: Cell = col[i - 1 - j]
                     let canIMoveDown: boolean = canIMoveTo(me, you)
-                    if(!canIMoveDown) break
+                    if (!canIMoveDown) break
                     if (you == null) {
                         col[i - j] = null
                         col[i - 1 - j] = me
@@ -224,7 +224,7 @@ const GameView = () => {
                     let me: Cell = cell
                     let you: Cell = col[i + 1 + j]
                     let canIMoveDown: boolean = canIMoveTo(me, you)
-                    if(!canIMoveDown) break
+                    if (!canIMoveDown) break
                     if (you == null) {
                         col[i + j] = null
                         col[i + 1 + j] = me
@@ -251,8 +251,8 @@ const GameView = () => {
     // Check if game over and add new 2
     const endTurn = (newGameBoard: any[][]) => {
         // CHECK FOR DOUBLE CELLS TO COMBINE AND GET SCORE
-        let combinedCells: Cell[][] = newGameBoard.flat().filter((cell: any)=>{
-            if(Array.isArray(cell)) return true
+        let combinedCells: Cell[][] = newGameBoard.flat().filter((cell: any) => {
+            if (Array.isArray(cell)) return true
             return false
         })
         let score = 0
@@ -347,6 +347,7 @@ const GameView = () => {
     }, [])
     const keys = (e: KeyboardEvent) => {
         // console.log(e)
+        e.preventDefault()
         switch (e.key) {
             case "ArrowUp":
                 swipeUp(getCurrentBoardCopy())
@@ -367,7 +368,12 @@ const GameView = () => {
     }
     return (
         <div {...handlers} className="cursor-grab select-none" id="drag-area">
-            <div className="text-4xl font-bold mb-8 text-center font-mono">PLAY 2048</div>
+            <div id="title-container">
+                <h3 className="leading-7 text-sm opacity-50">
+                    PLAY
+                </h3>
+                <h1 className="text-5xl font-bold mb-8 text-left font-mono leading-6">2048</h1>
+            </div>
 
             {/* GAME STATE CONTROLS */}
             <div className="flex flex-row justify-between mb-4">
@@ -424,8 +430,8 @@ const GameView = () => {
                 <div id="active-cells" className="absolute top-0 left-0 right-0 bottom-0 w-64 h-64">
                     {/* NON-NESTED MAPPED ARRAY METHOD */}
                     {
-                        gameBoard.flat().map((cell: Cell|any, index: number)=>{
-                            if(cell != null) return(
+                        gameBoard.flat().map((cell: Cell | any, index: number) => {
+                            if (cell != null) return (
                                 <Block key={`${cell.id}`} cell={cell} coord={cell.coord}></Block>
                             )
                         })
